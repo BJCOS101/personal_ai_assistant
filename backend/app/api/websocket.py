@@ -25,7 +25,7 @@ class ConnectionManager:
             del self.conversation_histories[client_id]
         logger.info(f"Client {client_id} disconnected")
     
-    def add_to_history(self, client_i: str, role: str, content: str):
+    def add_to_history(self, client_id: str, role: str, content: str):
         if client_id not in self.conversation_histories:
             self.conversation_histories[client_id] = []
             self.conversation_histories[client_id].append({"role": role,"content": content})

@@ -3,7 +3,7 @@ export interface Message {
   role: 'user' | 'assistant';
   content: string;
   sources?: SourceDocument[];
-  timestamp: Date;
+  timestamp: string | Date;
 }
 
 export interface SourceDocument {

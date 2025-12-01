@@ -81,7 +81,7 @@ export const Message: React.FC<MessageProps> = ({ message }) => {
         )}
 
         <span className="text-xs text-gray-500 mt-1">
-          {message.timestamp.toLocaleTimeString()}
+          {new Date(message.timestamp).toLocaleTimeString()}
         </span>
       </div>
 
