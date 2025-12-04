@@ -142,3 +142,18 @@ DocumentUpload.tsx: Upload and ingest new documents
 Message.tsx: Render individual messages with citations
 Sidebar.tsx: Show ingested documents, manage collection
 api.ts: Axios client for backend communication
+
+
+
+Commands:
+
+cd frontend
+npm run dev
+
+to restart frontend (Ctrl + C)
+
+
+cd backend
+uvicorn app.main:app --reload --port 8000
+
+to restart backend (Ctrl + C)
