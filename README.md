@@ -157,3 +157,6 @@ cd backend
 uvicorn app.main:app --reload --port 8000
 
 to restart backend (Ctrl + C)
+
+
+ill make a script for everything eventually
