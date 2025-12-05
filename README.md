@@ -160,3 +160,52 @@ to restart backend (Ctrl + C)
 
 
 ill make a script for everything eventually
+
+
+
+
+
+Using Free AI Models - Complete Integration Guide
+Great choice! Let's replace OpenAI with free, open-source models that run locally. For your use case (searching and analyzing documents), I'll guide you through the best options.
+Best Free Model Options for Your Project
+Recommended Setup (Best Balance)
+For Embeddings: sentence-transformers/all-MiniLM-L6-v2
+
+Fast, lightweight (80MB)
+Good semantic search quality
+Runs on CPU efficiently
+
+For LLM (Text Generation): Choose one based on your hardware:
+
+Mistral-7B-Instruct (Recommended - Best Quality)
+
+7B parameters
+Excellent instruction following
+Requires ~8GB RAM (or 4GB VRAM for GPU)
+Via Hugging Face Transformers or Ollama
+
+
+Phi-3-mini (Lightweight Alternative)
+
+3.8B parameters
+Good quality, very fast
+Requires ~4GB RAM
+Great for laptops/lower-end hardware
+
+
+LLaMA 3.2 3B (Latest from Meta)
+
+3B parameters
+State-of-the-art for its size
+Requires ~4GB RAM
+
+
+
+My Recommendation: Ollama + Mistral 7B
+Why Ollama?
+
+Easiest setup (one command)
+Automatic model management
+Optimized inference
+Works on CPU and GPU
+Simple API (OpenAI-compatible)
