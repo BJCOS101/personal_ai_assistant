@@ -150,13 +150,14 @@ Commands:
 cd frontend
 npm run dev
 
-to restart frontend (Ctrl + C)
+to restart frontend: (Ctrl + C)
 
 
 cd backend
-uvicorn app.main:app --reload --port 8000
+source venv/bin/activate
+python -m app.main
 
-to restart backend (Ctrl + C)
+to restart backend: (Ctrl + C) or deactivate
 
 
 ill make a script for everything eventually

@@ -7,30 +7,53 @@ __pycache__/
 env/
 venv/
 ENV/
+env.bak/
+venv.bak/
 *.egg-info/
 .pytest_cache/
 
 # Environment
 .env
 .env.local
+.env.*.local
+.env.production
+.env.development
+*.env
 
 # ChromaDB
 backend/data/chroma_db/
+*.db
+*.sqlite
 
 # Uploaded documents
 backend/data/documents/
+uploads/
+documents/
 
 # Node
 node_modules/
 frontend/dist/
 frontend/build/
 .DS_Store
+package-lock.json
+yarn.lock
 
 # IDE
 .vscode/
 .idea/
 *.swp
 *.swo
+.env.idea
 
 # Logs
 *.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Sensitive configs
+config.local.py
+secrets.yaml
+credentials.json
