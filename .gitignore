@@ -19,6 +19,7 @@ venv.bak/
 .env.production
 .env.development
 *.env
+.backend/.env
 
 # ChromaDB
 backend/data/chroma_db/
@@ -56,4 +57,4 @@ Thumbs.db
 # Sensitive configs
 config.local.py
 secrets.yaml
-credentials.json
+credentials.json.env
