@@ -20,7 +20,7 @@ class ChatService:
     def __init__(self):
         self.llm = ChatGroq(
             api_key=os.getenv("GROQ_API_KEY"),
-            model_name="llama3-8b-8192",
+            model_name="llama-3.3-70b-versatile",
             temperature=0.7
         )
         
