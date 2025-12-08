@@ -1,6 +1,12 @@
 from typing import List, Dict, Any
-from langchain_openai import ChatOpenAI
-from langchain.prompts import ChatPromptTemplate
+from langchain_core.prompts import ChatPromptTemplate
+
+import os
+from dotenv import load_dotenv
+from langchain_groq import ChatGroq
+
+load_dotenv()
+
 import logging
 from app.config import settings
 from app.services.vector_store import vector_store
@@ -12,17 +18,16 @@ class ChatService:
     """RAG-based chat service"""
     
     def __init__(self):
-        self.llm = ChatOpenAI(
-            model=settings.llm_model,
-            temperature=settings.llm_temperature,
-            max_tokens=settings.max_tokens,
-            openai_api_key=settings.openai_api_key
+        self.llm = ChatGroq(
+            api_key=os.getenv("GROQ_API_KEY"),
+            model_name="llama3-8b-8192",
+            temperature=0.7
         )
         
-        # RAG prompt template
+        # RAG prompt template (Keep the rest the same)
         self.prompt = ChatPromptTemplate.from_messages([
             ("system", """You are a helpful AI assistant that answers questions based on the user's personal knowledge base.
-
+            
             Instructions:
             1. Answer the question using ONLY the information provided in the context below
             2. If the context doesn't contain enough information to answer the question, say so clearly

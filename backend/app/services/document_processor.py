@@ -2,9 +2,10 @@ import os
 import logging
 from typing import List, Dict, Any
 from pathlib import Path
-import fitz  # PyMuPDF
+import fitz  # PyMuPDF              Need to comment out for time being due to build issues
+from langchain_community.document_loaders import PyPDFLoader
 from docx import Document as DocxDocument
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from app.config import settings
 
 logger = logging.getLogger(__name__)
@@ -76,10 +77,20 @@ class DocumentProcessor:
         file_extension = Path(file_path).suffix.lower()
         
         # Extract text based on file type
+
+        # uncomment below for time being due to build issues, comment when working
+        # if file_extension == '.pdf':
+        #     raise ValueError("PDF support temporarily disabled. Use TXT, MD, or DOCX instead.")
+        # elif file_extension in ['.docx', '.doc']:
+        #     pages_content = self.extract_text_from_docx(file_path)
+
+        # comment below for time being due to build issues, uncomment when working
         if file_extension == '.pdf':
             pages_content = self.extract_text_from_pdf(file_path)
         elif file_extension in ['.docx', '.doc']:
             pages_content = self.extract_text_from_docx(file_path)
+
+
         elif file_extension in ['.txt', '.md']:
             pages_content = self.extract_text_from_txt(file_path)
         else:

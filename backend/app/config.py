@@ -4,7 +4,8 @@ import os
 
 class Settings(BaseSettings):
     # API Keys
-    openai_api_key: str = ""
+    groq_api_key: str
+    llm_provider: str = "groq"
     
     # Embedding settings
     use_local_embeddings: bool = False
@@ -14,6 +15,8 @@ class Settings(BaseSettings):
     # Database settings
     chroma_persist_directory: str = "./data/chroma_db"
     chroma_collection_name: str = "personal_knowledge"
+
+    anonymized_telemetry: bool = False
     
     # Document settings
     documents_directory: str = "./data/documents"
@@ -21,7 +24,8 @@ class Settings(BaseSettings):
     chunk_overlap: int = 200
     
     # LLM settings
-    llm_model: str = "gpt-4o-mini"
+    # CHANGED: Default to a Groq-supported model (Llama 3 70B is a good balance)
+    llm_model: str = "llama3-70b-8192" 
     llm_temperature: float = 0.0
     max_tokens: int = 1000
     
