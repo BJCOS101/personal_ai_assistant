@@ -1,126 +1,5 @@
 ### Personal AI Knowledge Assistant - Complete Implementation Guide
 
-1. Project Summary
-
-Overview
-Build a personal AI knowledge assistant that ingests your documents (PDFs, markdown files, text files), creates searchable embeddings, and provides a conversational chat interface to query your knowledge base with cited sources. Think of it as "ChatGPT for your personal documents" with accurate retrieval and source attribution.
-Main Goals
-
-Ingest and process multiple document formats (PDF, TXT, MD, DOCX)
-Create vector embeddings for semantic search
-Provide conversational interface with natural language queries
-Cite sources in responses with exact document references
-Maintain conversation history for context-aware follow-ups
-
-Technology Choices & Rationale
-Backend: Python + FastAPI
-
-Python has the best AI/ML ecosystem (LangChain, transformers, etc.)
-FastAPI provides async support, automatic API docs, and is production-ready
-Easy WebSocket support for real-time chat
-
-Vector Database: ChromaDB
-
-Free, open-source, runs locally (no API keys needed initially)
-Simple Python integration
-Persistent storage
-Can migrate to Pinecone/Weaviate later if needed
-
-LLM: OpenAI API (with fallback to local models)
-
-Best quality responses for MVP
-Easy to swap for Claude/local models later
-We'll structure code to be LLM-agnostic
-
-Embeddings: OpenAI text-embedding-3-small
-
-Cost-effective ($0.02 per 1M tokens)
-High quality semantic search
-Alternative: sentence-transformers (free, local)
-
-Frontend: React + TypeScript + Tailwind CSS
-
-Modern, component-based UI
-TypeScript for type safety
-Tailwind for rapid styling
-
-Document Processing:
-
-PyMuPDF (fitz) for PDFs
-python-docx for Word documents
-Basic text parsers for MD/TXT
-
-Assumptions
-
-You have documents stored locally in a folder
-You're willing to use OpenAI API (we'll show free alternatives)
-You want a web-based interface (not CLI)
-Documents are in English (easy to extend for multilingual)
-
-
-2. Architecture & File Structure
-
-System Architecture
-User → React Frontend → FastAPI Backend → LangChain → ChromaDB
-                                        ↓
-                                   OpenAI API (LLM + Embeddings)
-Data Flow:
-
-Ingestion: Documents → Text Extraction → Chunking → Embeddings → ChromaDB
-Query: User Question → Embedding → Vector Search → Context Retrieval → LLM → Response
-Chat: Conversation history maintained for context-aware follow-ups
-
-Complete File Structure
-
-ai-review/
-├── backend/
-│   ├── app/
-│   │   ├── __init__.py
-│   │   ├── main.py                 # FastAPI application entry point
-│   │   ├── config.py               # Configuration and environment variables
-│   │   ├── models.py               # Pydantic models for API requests/responses
-│   │   ├── services/
-│   │   │   ├── __init__.py
-│   │   │   ├── document_processor.py   # Document ingestion and chunking
-│   │   │   ├── vector_store.py         # ChromaDB interactions
-│   │   │   ├── chat_service.py         # RAG and chat logic
-│   │   │   └── embeddings.py           # Embedding generation
-│   │   └── api/
-│   │       ├── __init__.py
-│   │       ├── routes.py           # API endpoints
-│   │       └── websocket.py        # WebSocket for real-time chat
-│   ├── data/
-│   │   ├── documents/              # Place your documents here
-│   │   └── chroma_db/              # ChromaDB persistence (auto-created)
-│   ├── requirements.txt
-│   ├── .env.example
-│   └── .env                        # Your actual environment variables
-│
-├── frontend/
-│   ├── public/
-│   │   └── index.html
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── ChatInterface.tsx   # Main chat UI
-│   │   │   ├── DocumentUpload.tsx  # Document upload component
-│   │   │   ├── Message.tsx         # Individual message component
-│   │   │   └── Sidebar.tsx         # Document list sidebar
-│   │   ├── services/
-│   │   │   └── api.ts              # API client
-│   │   ├── types/
-│   │   │   └── index.ts            # TypeScript interfaces
-│   │   ├── App.tsx                 # Root component
-│   │   ├── index.tsx               # React entry point
-│   │   └── index.css               # Global styles
-│   ├── package.json
-│   ├── tsconfig.json
-│   ├── tailwind.config.js
-│   └── vite.config.ts              # Vite configuration
-│
-├── docker-compose.yml              # Optional: Docker setup
-├── README.md
-└── .gitignore
-
 
 Component Responsibilities
 Backend Components:
@@ -414,5 +293,26 @@ Install dependencies:
 Note: This installs the specific modern libaries required for Python 3.12 compatibility
 `pip install langchain langchain-community langchain-groq langchain-huggingface sentence-transformers python-dotenv langchain-text-splitters uvicorn fastapi watchfiles`
 
+Configure Environment:
+1. Create a file named `.env` in the `backend/` folder
+2. Add your API key and telemetry setting to prevent database errors
+```
+GROQ_API_KEY=gsk_your_actual_key_here
+ANONYMIZED_TELEMETRY=False
+```
+
+Start the Server:
+`python -m app.main`
+You should see 'Uvicorn running on http://0.0.0.0:8000'
 
 
+2. Frontend Setup
+Open a new terminal window, keep the backend running, and navigate to the frontend:
+`cd frontend`
+
+Install Dependencies:
+`npm install`
+
+Start the App:
+`npm run dev`
+The app should open at `http://localhost:5173` (or port 3000)
