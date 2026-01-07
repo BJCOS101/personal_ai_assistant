@@ -66,14 +66,14 @@ Your App: Is specifically programmed to ignore its own memory and only use the d
 
 
 
-CosAI - Personal AI Knowledge Assistant
+### CosAI - Personal AI Knowledge Assistant
 
 A secure, local first RAG (Retrieval Augmented Generation) Application that lets you chat with your own documents. It ingests your files (PDFs, TXT), understnads them using local AI models, and answers questions using Groq-AI
 
 Think of it as the 'ChatGPT for your personal documents' - it only knows what you tell it, ensuring accuracy and reducing hallucinations
 
 
-Features
+## Features
 - 100% Free Tech Stack: Uses Groq (Free Tier) for intelligence and HuggingFace (Local) for memory
 - Document Integestion: Specialised processing for PDFs and text files
 - Strict RAG: The AI is instructed to only answer based on your documents. If the answer isn't in your files, it says "I don't know" rather than making things up
@@ -81,7 +81,7 @@ Features
 - Privacy Focused: Your documents and embeddings stay on your machine. Only the text is relevant to your specific query is sent to the LLM
 
 
-Tech Stack
+## Tech Stack
 - Backend: Python 3.12.1, FastAPI
 - Frontned: React, TypeScript, Tailwind CSS, Vite
 - LLM (The Brain): Groq API - llama-3.3-70b-versatile
@@ -89,7 +89,7 @@ Tech Stack
 - Vector Database: ChromaDB (Local File storage)
 
 
-Project Structure
+## Project Structure
 ```
 ai-review/
 ├── backend/
