@@ -1,50 +1,6 @@
 ### Personal AI Knowledge Assistant - Complete Implementation Guide
 
 
-Commands:
-
-cd frontend
-npm run dev
-
-to restart frontend: (Ctrl + C)
-
-
-cd backend
-source venv/bin/activate
-python -m app.main
-
-to restart backend: (Ctrl + C) or deactivate
-
-
-ill make a script for everything eventually
-
-
-
-need to use virtual environemnet for backend, use python 3.12
-
-deactivate
-rm -rf venv
-
-python3.11 --version
-# OR
-python3.12 --version
-# OR
-python3.10 --version
-
-
-# Use the specific python version to create the venv
-python3.11 -m venv venv
-
-# Activate the new environment
-source venv/bin/activate
-
-pip install -r requirements.txt
-
-python -m app.main
-
-
-
-
 Using Free AI Models - Complete Integration Guide
 Great choice! Let's replace OpenAI with free, open-source models that run locally. For your use case (searching and analyzing documents), I'll guide you through the best options.
 Best Free Model Options for Your Project
@@ -153,7 +109,7 @@ ai-review/
     └── package.json                # JS Dependencies
 ```
 
-Installation & Setup
+## Installation & Setup
 
 Prerequistes
 1. Python 3.12.1 installed
@@ -162,7 +118,7 @@ Prerequistes
 
 
 
-1. Backend Setup
+### 1. Backend Setup
 Open terminal and navigate to the backend:
 `cd backend`
 
@@ -175,11 +131,18 @@ source venv/bin/activate
 # Windows
 py -3.12 -m venv venv
 venv\Scripts\activate
+
+
+# To deactivate for whatever reason
+rm -rf venv
 ```
 
 Install dependencies:
+
+```
+pip install langchain langchain-community langchain-groq langchain-huggingface sentence-transformers python-dotenv langchain-text-splitters uvicorn fastapi watchfiles
+```
 Note: This installs the specific modern libaries required for Python 3.12 compatibility
-`pip install langchain langchain-community langchain-groq langchain-huggingface sentence-transformers python-dotenv langchain-text-splitters uvicorn fastapi watchfiles`
 
 Configure Environment:
 1. Create a file named `.env` in the `backend/` folder
@@ -194,7 +157,7 @@ Start the Server:
 You should see 'Uvicorn running on http://0.0.0.0:8000'
 
 
-2. Frontend Setup
+### 2. Frontend Setup
 Open a new terminal window, keep the backend running, and navigate to the frontend:
 `cd frontend`
 
