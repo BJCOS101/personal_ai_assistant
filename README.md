@@ -1,71 +1,3 @@
-### Personal AI Knowledge Assistant - Complete Implementation Guide
-
-
-Using Free AI Models - Complete Integration Guide
-Great choice! Let's replace OpenAI with free, open-source models that run locally. For your use case (searching and analyzing documents), I'll guide you through the best options.
-Best Free Model Options for Your Project
-Recommended Setup (Best Balance)
-For Embeddings: sentence-transformers/all-MiniLM-L6-v2
-
-Fast, lightweight (80MB)
-Good semantic search quality
-Runs on CPU efficiently
-
-For LLM (Text Generation): Choose one based on your hardware:
-
-Mistral-7B-Instruct (Recommended - Best Quality)
-
-7B parameters
-Excellent instruction following
-Requires ~8GB RAM (or 4GB VRAM for GPU)
-Via Hugging Face Transformers or Ollama
-
-
-Phi-3-mini (Lightweight Alternative)
-
-3.8B parameters
-Good quality, very fast
-Requires ~4GB RAM
-Great for laptops/lower-end hardware
-
-
-LLaMA 3.2 3B (Latest from Meta)
-
-3B parameters
-State-of-the-art for its size
-Requires ~4GB RAM
-
-
-
-My Recommendation: Ollama + Mistral 7B
-Why Ollama?
-
-Easiest setup (one command)
-Automatic model management
-Optimized inference
-Works on CPU and GPU
-Simple API (OpenAI-compatible)
-
-
-
-
-
-
-Verdict: It is working exactly as designed.
-
-You might be thinking, "Wait, I thought AI was smart? Why doesn't it know Paris is the capital of France?"
-
-The Reason: You built a RAG (Retrieval-Augmented Generation) application.
-
-Standard ChatGPT: Uses its own memory of the internet to answer anything.
-
-Your App: Is specifically programmed to ignore its own memory and only use the documents you give it.
-
-
-
-
-
-
 # CosAI - Personal AI Knowledge Assistant
 ### Complete Implementation Guide
 
@@ -88,6 +20,36 @@ Think of it as the 'ChatGPT for your personal documents' - it only knows what yo
 - LLM (The Brain): Groq API - llama-3.3-70b-versatile
 - Embeddings (The Memory): HuggingFace running locally - sentence-transformers/all-MiniLM-L6-v2
 - Vector Database: ChromaDB (Local File storage)
+
+
+## Models
+For Embeddings (The Memory): sentence-transformers/all-MiniLM-L6-v2
+- Source: HuggingFace running locally
+- Role: Processes your PDFs and text files to create "memory" stored on your machine.
+- Privacy: Ensures your full documents and embeddings stay on your device.
+
+For LLM (The Brain): Groq API - llama-3.3-70b-versatile
+- Source: Groq (Free Tier)
+- Role: Handles the intelligence and text generation.
+- Performance: High-speed inference using the versatile Llama 3.3 70B model.
+
+For Storage: ChromaDB
+- Type: Local File Storage
+- Role: Acts as the Vector Database to store your document embeddings efficiently.
+
+Hybrid Approach (Groq + Local HuggingFace)
+
+
+## Verdict
+It is working exactly as designed.
+
+You might be thinking, "Wait, I thought AI was smart? Why doesn't it know Paris is the capital of France?"
+
+The Reason: You built a RAG (Retrieval-Augmented Generation) application.
+
+Standard ChatGPT: Uses its own memory of the internet to answer anything.
+
+Your App: Is specifically programmed to ignore its own memory and only use the documents you give it.
 
 
 ## Project Structure
