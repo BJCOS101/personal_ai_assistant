@@ -66,7 +66,8 @@ Your App: Is specifically programmed to ignore its own memory and only use the d
 
 
 
-### CosAI - Personal AI Knowledge Assistant
+# CosAI - Personal AI Knowledge Assistant
+### Complete Implementation Guide
 
 A secure, local first RAG (Retrieval Augmented Generation) Application that lets you chat with your own documents. It ingests your files (PDFs, TXT), understnads them using local AI models, and answers questions using Groq-AI
 
