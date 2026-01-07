@@ -154,16 +154,21 @@ ANONYMIZED_TELEMETRY=False
 
 Start the Server:
 `python -m app.main`
-You should see 'Uvicorn running on http://0.0.0.0:8000'
+
+You should see `Uvicorn running on http://0.0.0.0:8000`
 
 
 ### 2. Frontend Setup
 Open a new terminal window, keep the backend running, and navigate to the frontend:
+
 `cd frontend`
 
 Install Dependencies:
+
 `npm install`
 
 Start the App:
+
 `npm run dev`
+
 The app should open at `http://localhost:5173` (or port 3000)
