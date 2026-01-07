@@ -159,16 +159,10 @@ You should see `Uvicorn running on http://0.0.0.0:8000`
 
 
 ### 2. Frontend Setup
-Open a new terminal window, keep the backend running, and navigate to the frontend:
+Open a new terminal window, keep the backend running, and navigate to the frontend: `cd frontend`
 
-`cd frontend`
+Install Dependencies: `npm install`
 
-Install Dependencies:
-
-`npm install`
-
-Start the App:
-
-`npm run dev`
+Start the App: `npm run dev`
 
 The app should open at `http://localhost:5173` (or port 3000)
