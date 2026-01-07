@@ -1,29 +1,6 @@
 ### Personal AI Knowledge Assistant - Complete Implementation Guide
 
 
-Component Responsibilities
-Backend Components:
-
-main.py: FastAPI app initialization, CORS, middleware
-config.py: Environment variables, API keys, paths
-models.py: Request/response schemas (QueryRequest, ChatResponse, etc.)
-document_processor.py: Extract text from PDFs/DOCX, split into chunks
-vector_store.py: ChromaDB operations (add, query, delete)
-chat_service.py: RAG pipeline, LLM prompting, source citation
-embeddings.py: Generate embeddings (OpenAI or local)
-routes.py: REST endpoints for document management
-websocket.py: Real-time chat via WebSocket
-
-Frontend Components:
-
-ChatInterface.tsx: Main chat UI with message history
-DocumentUpload.tsx: Upload and ingest new documents
-Message.tsx: Render individual messages with citations
-Sidebar.tsx: Show ingested documents, manage collection
-api.ts: Axios client for backend communication
-
-
-
 Commands:
 
 cd frontend
@@ -133,96 +110,6 @@ Your App: Is specifically programmed to ignore its own memory and only use the d
 
 
 
-
-
-
-Here is the consolidated setup guide for your README.md.
-
-Since you have already modified the code files (main.py, chat_service.py, etc.) to use Groq and local embeddings, a new user simply needs to install the correct libraries and add their keys.
-
-You can copy-paste the sections below directly into your README.
-
-🛠️ Installation & Setup
-Prerequisites
-Python 3.10+
-
-Node.js & npm
-
-Groq API Key (Get one for free at console.groq.com)
-
-1. Backend Setup (The Brain)
-Navigate to the backend folder:
-
-Bash
-
-cd backend
-Create and Activate a Virtual Environment:
-
-Bash
-
-# Mac/Linux
-python3 -m venv venv
-source venv/bin/activate
-
-# Windows
-python -m venv venv
-venv\Scripts\activate
-Install Dependencies: These are the specific libraries needed for Groq and Local Embeddings:
-
-Bash
-
-pip install langchain langchain-community langchain-groq langchain-huggingface sentence-transformers python-dotenv langchain-text-splitters uvicorn fastapi
-Configure Environment Variables:
-
-Create a file named .env in the backend folder.
-
-Add your Groq API key and the telemetry setting:
-
-Code snippet
-
-GROQ_API_KEY=gsk_your_actual_key_here
-ANONYMIZED_TELEMETRY=False
-Start the Server:
-
-Bash
-
-python -m app.main
-The server should start at http://localhost:8000.
-
-2. Frontend Setup (The Interface)
-Open a new terminal and navigate to the frontend folder:
-
-Bash
-
-cd frontend
-Install Dependencies:
-
-Bash
-
-npm install
-Start the Application:
-
-Bash
-
-npm start
-The application should open at http://localhost:3000.
-
-3. Usage Guide
-Open the web interface (http://localhost:3000).
-
-Upload a Document: Drag and drop a PDF or TXT file (e.g., notes.txt) to the sidebar.
-
-Note: Since this uses RAG, the bot will NOT answer questions until you give it a document to read.
-
-Ask a Question: Type a question related to the document you just uploaded.
-
-💡 Troubleshooting
-"Capture() takes 1 positional argument...": Ensure ANONYMIZED_TELEMETRY=False is in your .env file and that you have restarted the backend.
-
-ModuleNotFound Errors: Ensure you activated the virtual environment (source venv/bin/activate) before running the server.
-
-
-
 CosAI - Personal AI Knowledge Assistant
 
 A secure, local first RAG (Retrieval Augmented Generation) Application that lets you chat with your own documents. It ingests your files (PDFs, TXT), understnads them using local AI models, and answers questions using Groq-AI
@@ -272,6 +159,7 @@ Prerequistes
 1. Python 3.12.1 installed
 2. Node.js & npm installed
 3. Groq API Key (Get one for free at console.groq.com)
+
 
 
 1. Backend Setup
