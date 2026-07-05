@@ -26,9 +26,11 @@ class ConnectionManager:
         logger.info(f"Client {client_id} disconnected")
     
     def add_to_history(self, client_id: str, role: str, content: str):
+        # Make sure this client has a history list to append to...
         if client_id not in self.conversation_histories:
             self.conversation_histories[client_id] = []
-            self.conversation_histories[client_id].append({"role": role,"content": content})
+        # ...then ALWAYS record the message (note: this line is now OUTSIDE the if).
+        self.conversation_histories[client_id].append({"role": role, "content": content})
 
     def get_history(self, client_id: str) -> List[Dict[str, str]]:
         return self.conversation_histories.get(client_id, [])
@@ -89,4 +91,4 @@ async def websocket_chat(websocket: WebSocket, client_id: str):
         manager.disconnect(websocket, client_id)
     except Exception as e:
         logger.error(f"Error in websocket chat for client {client_id}: {e}")
-        manager.disconnec(websocket, client_id)
+        manager.disconnect(websocket, client_id)

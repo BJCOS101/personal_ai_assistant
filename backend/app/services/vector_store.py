@@ -16,10 +16,16 @@ class VectorStore:
             settings=ChromaSettings(anonymized_telemetry=False)
         )
         
-        # Get or create collection
+        # Get or create collection.
+        # "hnsw:space": "cosine" tells ChromaDB to measure similarity by ANGLE
+        # (direction of meaning) instead of the default straight-line distance.
+        # This makes our relevance scores line up cleanly on a 0.0 - 1.0 scale.
         self.collection = self.client.get_or_create_collection(
             name=settings.chroma_collection_name,
-            metadata={"description": "Personal knowledge base"}
+            metadata={
+                "description": "Personal knowledge base",
+                "hnsw:space": "cosine",
+            }
         )
         
         logger.info(f"ChromaDB initialized. Collection: {settings.chroma_collection_name}")
@@ -69,35 +75,54 @@ class VectorStore:
         self,
         query_text: str,
         n_results: int = 3,
-        filter_metadata: Optional[Dict[str, Any]] = None
+        filter_metadata: Optional[Dict[str, Any]] = None,
+        min_relevance: Optional[float] = None,
     ) -> List[Dict[str, Any]]:
         """
         Query the vector store
-        
+
+        Args:
+            min_relevance: chunks scoring below this (0.0 - 1.0) are dropped.
+                           Falls back to settings.relevance_threshold if None.
+
         Returns:
             List of dicts with keys: content, metadata, relevance_score
         """
+        if min_relevance is None:
+            min_relevance = settings.relevance_threshold
+
         try:
             # Generate query embedding
             query_embedding = embedding_service.embed_query(query_text)
-            
+
             # Query ChromaDB
             results = self.collection.query(
                 query_embeddings=[query_embedding],
                 n_results=n_results,
                 where=filter_metadata
             )
-            
-            # Format results
+
+            # Format results, keeping only chunks that clear the relevance bar.
             formatted_results = []
             if results['documents'] and results['documents'][0]:
                 for i, doc in enumerate(results['documents'][0]):
+                    # With cosine space: similarity = 1 - distance (0.0 - 1.0).
+                    relevance_score = 1 - results['distances'][0][i]
+
+                    # Skip weak / off-topic matches so the AI never sees junk.
+                    if relevance_score < min_relevance:
+                        continue
+
                     formatted_results.append({
                         "content": doc,
                         "metadata": results['metadatas'][0][i],
-                        "relevance_score": 1 - results['distances'][0][i]  # Convert distance to similarity
+                        "relevance_score": relevance_score,
                     })
-            
+
+            logger.info(
+                f"Query kept {len(formatted_results)} chunk(s) "
+                f"(threshold {min_relevance})"
+            )
             return formatted_results
         
         except Exception as e:
@@ -152,7 +177,10 @@ class VectorStore:
             self.client.delete_collection(settings.chroma_collection_name)
             self.collection = self.client.create_collection(
                 name=settings.chroma_collection_name,
-                metadata={"description": "Personal knowledge base"}
+                metadata={
+                    "description": "Personal knowledge base",
+                    "hnsw:space": "cosine",
+                }
             )
             logger.info("Cleared vector store collection")
         except Exception as e:

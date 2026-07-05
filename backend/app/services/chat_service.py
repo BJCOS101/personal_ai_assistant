@@ -1,11 +1,6 @@
 from typing import List, Dict, Any
 from langchain_core.prompts import ChatPromptTemplate
-
-import os
-from dotenv import load_dotenv
 from langchain_groq import ChatGroq
-
-load_dotenv()
 
 import logging
 from app.config import settings
@@ -16,12 +11,15 @@ logger = logging.getLogger(__name__)
 
 class ChatService:
     """RAG-based chat service"""
-    
+
     def __init__(self):
+        # All values now come from config.py (which reads your .env),
+        # instead of being hardcoded here. Change behavior by editing .env only.
         self.llm = ChatGroq(
-            api_key=os.getenv("GROQ_API_KEY"),
-            model_name="llama-3.3-70b-versatile",
-            temperature=0.7
+            api_key=settings.groq_api_key,
+            model_name=settings.llm_model,
+            temperature=settings.llm_temperature,
+            max_tokens=settings.max_tokens,
         )
         
         # RAG prompt template (Keep the rest the same)
