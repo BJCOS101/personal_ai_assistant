@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { DocumentMetadata, QueryRequest, ChatResponse } from '../types';
+import { DocumentMetadata, QueryRequest, ChatResponse, LLMProviderStatus } from '../types';
 
 const API_BASE_URL = '/api';
 
@@ -41,6 +41,19 @@ export const api = {
   // Health check
   healthCheck: async (): Promise<any> => {
     const response = await axios.get(`${API_BASE_URL}/health`);
+    return response.data;
+  },
+
+  // LLM provider (online/offline toggle)
+  getLLMProvider: async (): Promise<LLMProviderStatus> => {
+    const response = await axios.get(`${API_BASE_URL}/llm-provider`);
+    return response.data;
+  },
+
+  setLLMProvider: async (offlineMode: boolean): Promise<LLMProviderStatus> => {
+    const response = await axios.post(`${API_BASE_URL}/llm-provider`, {
+      offline_mode: offlineMode,
+    });
     return response.data;
   },
 };

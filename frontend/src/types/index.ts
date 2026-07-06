@@ -33,3 +33,10 @@ export interface QueryRequest {
   conversation_history?: Array<{ role: string; content: string }>;
   max_sources?: number;
 }
+
+export interface LLMProviderStatus {
+  provider: string;
+  offline_mode: boolean;
+  groq_configured: boolean;
+  ollama_running: boolean;
+}

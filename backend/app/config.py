@@ -1,5 +1,5 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from typing import List
+from typing import List, Optional
 import os
 
 
@@ -12,10 +12,17 @@ class Settings(BaseSettings):
     """
 
     # --- API keys ---
-    groq_api_key: str
+    # Optional because it's only needed when llm_provider = "groq".
+    # Fully-offline (llm_provider = "ollama") mode needs no API key at all.
+    groq_api_key: Optional[str] = None
 
-    # --- LLM: the cloud "answer writer" (Groq) ---
-    llm_model: str = "llama-3.3-70b-versatile"
+    # --- LLM: the "answer writer" ---
+    # "groq"   -> cloud, fast, high quality, sends retrieved text to Groq's servers
+    # "ollama" -> fully local/offline, nothing ever leaves this machine
+    llm_provider: str = "groq"
+    llm_model: str = "llama-3.3-70b-versatile"          # used when llm_provider = "groq"
+    ollama_model: str = "llama3.1:8b"                    # used when llm_provider = "ollama"
+    ollama_base_url: str = "http://localhost:11434"      # Ollama's local server address
     llm_temperature: float = 0.0   # 0 = stay factual / grounded; higher = more creative
     max_tokens: int = 1000         # rough cap on answer length
 
@@ -32,6 +39,7 @@ class Settings(BaseSettings):
     documents_directory: str = "./data/documents"
     chunk_size: int = 1000
     chunk_overlap: int = 200
+    max_upload_size_mb: int = 20  # reject uploads bigger than this
 
     # --- Retrieval quality ---
     # Chunks scoring below this similarity (0.0 - 1.0) are treated as "not

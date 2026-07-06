@@ -1,6 +1,8 @@
 from typing import List, Dict, Any
+import requests
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_groq import ChatGroq
+from langchain_ollama import ChatOllama
 
 import logging
 from app.config import settings
@@ -9,19 +11,61 @@ from app.models import QueryRequest, ChatResponse, SourceDocument
 
 logger = logging.getLogger(__name__)
 
-class ChatService:
-    """RAG-based chat service"""
 
-    def __init__(self):
-        # All values now come from config.py (which reads your .env),
-        # instead of being hardcoded here. Change behavior by editing .env only.
-        self.llm = ChatGroq(
+def is_ollama_running() -> bool:
+    """Ping the local Ollama server to see if it's actually up."""
+    try:
+        resp = requests.get(f"{settings.ollama_base_url}/api/tags", timeout=1.5)
+        return resp.status_code == 200
+    except requests.RequestException:
+        return False
+
+
+def build_llm(provider: str):
+    """
+    Build the "answer writer" model for a given provider name.
+
+      - "groq"   -> cloud model (fast, high quality, sends retrieved
+                     text to Groq's servers over the internet)
+      - "ollama" -> local model running on this machine via Ollama
+                     (fully offline, nothing leaves your computer)
+    """
+    if provider == "ollama":
+        logger.info(f"Using LOCAL/offline LLM via Ollama: {settings.ollama_model}")
+        return ChatOllama(
+            model=settings.ollama_model,
+            base_url=settings.ollama_base_url,
+            temperature=settings.llm_temperature,
+            num_predict=settings.max_tokens,
+        )
+
+    if provider == "groq":
+        if not settings.groq_api_key:
+            raise ValueError(
+                "GROQ_API_KEY is required when LLM_PROVIDER=groq. "
+                "Either set it in .env, or switch to offline mode."
+            )
+        logger.info(f"Using CLOUD LLM via Groq: {settings.llm_model}")
+        return ChatGroq(
             api_key=settings.groq_api_key,
             model_name=settings.llm_model,
             temperature=settings.llm_temperature,
             max_tokens=settings.max_tokens,
         )
-        
+
+    raise ValueError(f"Unknown llm_provider: {provider!r}")
+
+
+class ChatService:
+    """RAG-based chat service"""
+
+    def __init__(self):
+        # One LLM "client" object per provider, built lazily and reused.
+        # Switching providers at runtime (the UI toggle) just changes which
+        # cached client we read from settings.llm_provider each request.
+        self._llm_cache: Dict[str, Any] = {}
+        self._get_llm()  # build the startup default now, so config errors surface immediately
+
         # RAG prompt template (Keep the rest the same)
         self.prompt = ChatPromptTemplate.from_messages([
             ("system", """You are a helpful AI assistant that answers questions based on the user's personal knowledge base.
@@ -42,6 +86,14 @@ class ChatService:
             ("human", "{question}")
         ])
     
+    def _get_llm(self):
+        """Return the LLM client for whichever provider is currently active,
+        building it once and reusing it after that."""
+        provider = settings.llm_provider
+        if provider not in self._llm_cache:
+            self._llm_cache[provider] = build_llm(provider)
+        return self._llm_cache[provider]
+
     def format_conversation_history(self, history: List[Dict[str, str]]) -> str:
         """Format conversation history for the prompt"""
         if not history:
@@ -92,7 +144,7 @@ class ChatService:
                 question=request.query
             )
             
-            response = self.llm.invoke(messages)
+            response = self._get_llm().invoke(messages)
             answer = response.content
             
             # 5. Format sources

@@ -1,7 +1,6 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from typing import List
 import os
-import shutil
 from datetime import datetime
 from app.config import settings
 from app.models import (
@@ -9,11 +8,13 @@ from app.models import (
     ChatResponse,
     DocumentUploadResponse,
     DocumentListResponse,
-    DocumentMetadata
+    DocumentMetadata,
+    LLMProviderStatus,
+    LLMProviderUpdateRequest,
 )
 from app.services.document_processor import document_processor
 from app.services.vector_store import vector_store
-from app.services.chat_service import chat_service
+from app.services.chat_service import chat_service, is_ollama_running
 import logging
 
 logger = logging.getLogger(__name__)
@@ -23,22 +24,46 @@ router = APIRouter()
 async def upload_document(file: UploadFile = File(...)):
     """Upload and process a document"""
     try:
+        # Strip any directory components from the uploaded filename
+        # (e.g. "../../etc/passwd" -> "passwd") so a crafted filename
+        # can never write outside the documents directory.
+        safe_filename = os.path.basename(file.filename or "")
+        if not safe_filename or safe_filename in (".", ".."):
+            raise HTTPException(status_code=400, detail="Invalid filename")
+
         # Validate file type
         allowed_extensions = ['.pdf', '.docx', '.doc', '.txt', '.md']
-        file_extension = os.path.splitext(file.filename)[1].lower()
-        
+        file_extension = os.path.splitext(safe_filename)[1].lower()
+
         if file_extension not in allowed_extensions:
             raise HTTPException(
                 status_code=400,
                 detail=f"Unsupported file type. Allowed: {', '.join(allowed_extensions)}"
             )
-        
-        # Save file
-        file_path = os.path.join(settings.documents_directory, file.filename)
-        
+
+        file_path = os.path.join(settings.documents_directory, safe_filename)
+
+        # Belt-and-braces check: confirm the final path is really inside
+        # the documents directory before we write anything to disk.
+        documents_dir = os.path.abspath(settings.documents_directory)
+        if not os.path.abspath(file_path).startswith(documents_dir + os.sep):
+            raise HTTPException(status_code=400, detail="Invalid filename")
+
+        # Save file, rejecting it partway through if it exceeds the size limit
+        max_bytes = settings.max_upload_size_mb * 1024 * 1024
+        bytes_written = 0
         with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
-        
+            while chunk := await file.read(1024 * 1024):
+                bytes_written += len(chunk)
+                if bytes_written > max_bytes:
+                    buffer.close()
+                    os.remove(file_path)
+                    raise HTTPException(
+                        status_code=413,
+                        detail=f"File exceeds max upload size of {settings.max_upload_size_mb}MB"
+                    )
+                buffer.write(chunk)
+
         # Process document
         chunks = document_processor.process_document(file_path)
         
@@ -47,9 +72,9 @@ async def upload_document(file: UploadFile = File(...)):
         
         return DocumentUploadResponse(
             success=True,
-            filename=file.filename,
+            filename=safe_filename,
             num_chunks=num_chunks,
-            message=f"Successfully processed {file.filename} into {num_chunks} chunks"
+            message=f"Successfully processed {safe_filename} into {num_chunks} chunks"
         )
     
     except Exception as e:
@@ -136,6 +161,48 @@ async def clear_knowledge_base():
     except Exception as e:
         logger.error(f"Error clearing knowledge base: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/llm-provider", response_model=LLMProviderStatus)
+async def get_llm_provider():
+    """Report which 'answer writer' (LLM) is currently active, and what's available."""
+    return LLMProviderStatus(
+        provider=settings.llm_provider,
+        offline_mode=(settings.llm_provider == "ollama"),
+        groq_configured=bool(settings.groq_api_key),
+        ollama_running=is_ollama_running(),
+    )
+
+@router.post("/llm-provider", response_model=LLMProviderStatus)
+async def set_llm_provider(request: LLMProviderUpdateRequest):
+    """Flip between offline (Ollama) and online (Groq) mode. Takes effect immediately."""
+    wants_offline = request.offline_mode
+
+    if wants_offline:
+        if not is_ollama_running():
+            raise HTTPException(
+                status_code=503,
+                detail=(
+                    "Ollama isn't running. Start it with: brew services start ollama "
+                    "(or 'ollama serve' in a terminal), then try again."
+                )
+            )
+        settings.llm_provider = "ollama"
+    else:
+        if not settings.groq_api_key:
+            raise HTTPException(
+                status_code=400,
+                detail="Cannot switch to online mode: no GROQ_API_KEY is configured in .env"
+            )
+        settings.llm_provider = "groq"
+
+    logger.info(f"LLM provider switched to: {settings.llm_provider}")
+
+    return LLMProviderStatus(
+        provider=settings.llm_provider,
+        offline_mode=(settings.llm_provider == "ollama"),
+        groq_configured=bool(settings.groq_api_key),
+        ollama_running=is_ollama_running(),
+    )
 
 @router.get("/health")
 async def health_check():

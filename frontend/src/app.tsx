@@ -2,6 +2,7 @@ import React from 'react';
 import { ChatInterface } from './components/ChatInterface';
 import { DocumentUpload } from './components/DocumentUpload';
 import { Sidebar } from './components/Sidebar';
+import { OfflineModeToggle } from './components/OfflineModeToggle';
 import { Brain } from 'lucide-react';
 function App() {
     const [refreshKey, setRefreshKey] = React.useState(0);
@@ -12,18 +13,21 @@ function App() {
     return (<div className="h-screen flex flex-col bg-gray-50">
       {/* Header */}
       <header className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="flex items-center gap-3">
-          <div className="bg-blue-500 rounded-lg p-2">
-            <Brain className="w-6 h-6 text-white"/>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="bg-blue-500 rounded-lg p-2">
+              <Brain className="w-6 h-6 text-white"/>
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-gray-900">
+                Personal AI Knowledge Assistant
+              </h1>
+              <p className="text-sm text-gray-600">
+                Ask questions about your documents
+              </p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-xl font-bold text-gray-900">
-              Personal AI Knowledge Assistant
-            </h1>
-            <p className="text-sm text-gray-600">
-              Ask questions about your documents
-            </p>
-          </div>
+          <OfflineModeToggle />
         </div>
       </header>
 

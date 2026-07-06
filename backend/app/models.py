@@ -42,3 +42,12 @@ class DocumentListResponse(BaseModel):
 class ErrorResponse(BaseModel):
     error: str
     detail: Optional[str] = None
+
+class LLMProviderStatus(BaseModel):
+    provider: str            # "groq" or "ollama" - the currently active one
+    offline_mode: bool        # convenience flag: provider == "ollama"
+    groq_configured: bool     # is a Groq API key available, if you switch back?
+    ollama_running: bool      # is the local Ollama server reachable right now?
+
+class LLMProviderUpdateRequest(BaseModel):
+    offline_mode: bool
