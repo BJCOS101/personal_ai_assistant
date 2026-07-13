@@ -37,7 +37,7 @@ Think of it as the "ChatGPT for your personal documents" - it only knows what yo
 | | Groq (online) | Ollama (offline) |
 |---|---|---|
 | Model | llama-3.3-70b-versatile | llama3.1:8b |
-| Where it runs | Groq's cloud servers | Your own Mac |
+| Where it runs | Groq's cloud servers | Your own computer |
 | Needs internet | Yes | No |
 | Speed | Very fast | Slower (depends on your hardware) |
 | Answer quality | Higher (70B model) | Good (8B model) |
