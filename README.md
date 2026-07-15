@@ -96,12 +96,14 @@ personal_ai_assistant/
 ## Installation & Setup
 
 ### Prerequisites
-1. Python 3.12 installed
-2. Node.js & npm installed
+1. Python 3.12 installed ([python.org](https://www.python.org/downloads/) for Windows/Mac)
+2. Node.js & npm installed ([nodejs.org](https://nodejs.org) - get the LTS version)
 3. **For online mode**: a free Groq API key from [console.groq.com](https://console.groq.com)
 4. **For offline mode** (optional): [Ollama](https://ollama.com) installed locally
 
 You don't need both - pick whichever mode(s) you want to use. You can always add the other later; switching is just a setting.
+
+These steps work the same on Windows, Mac, and Linux unless noted otherwise. On Windows, run the commands in **PowerShell** (Command Prompt also works for most steps).
 
 
 ### 1. Backend Setup
@@ -117,10 +119,17 @@ Create and activate a virtual environment:
 python3.12 -m venv venv
 source venv/bin/activate
 
-# Windows
+# Windows (PowerShell)
 py -3.12 -m venv venv
-venv\Scripts\activate
+venv\Scripts\Activate.ps1
+
+# Windows (Command Prompt)
+py -3.12 -m venv venv
+venv\Scripts\activate.bat
 ```
+> **Windows note**: if PowerShell blocks the activation script with an error about "execution policies", run `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass` in that same PowerShell window, then try activating again.
+
+Either way, once activated you'll see `(venv)` at the start of your terminal prompt.
 
 Install dependencies:
 ```bash
@@ -128,7 +137,17 @@ pip install -r requirements.txt
 ```
 
 Configure your environment:
-1. Copy the template: `cp .env.example .env`
+1. Copy the template:
+   ```bash
+   # Mac/Linux
+   cp .env.example .env
+
+   # Windows (PowerShell)
+   Copy-Item .env.example .env
+
+   # Windows (Command Prompt)
+   copy .env.example .env
+   ```
 2. Open `backend/.env` and fill in your values. At minimum, for online mode:
 ```
 GROQ_API_KEY=gsk_your_actual_key_here
@@ -156,16 +175,25 @@ The app should open at `http://localhost:5173`.
 
 ### 3. (Optional) Offline Mode via Ollama
 
-If you want to run entirely offline - no internet, no API key, nothing leaves your machine - install Ollama and pull a model once:
+If you want to run entirely offline - no internet, no API key, nothing leaves your machine - install Ollama and pull a model once.
 
+**Install Ollama:**
 ```bash
-# Install Ollama (Mac, via Homebrew)
+# Mac, via Homebrew
 brew install ollama
+brew services start ollama   # runs Ollama in the background, auto-starts on login
 
-# Start Ollama as a background service (auto-starts on login)
-brew services start ollama
+# Windows
+# Download and run the installer from https://ollama.com/download
+# It installs Ollama as a background app that starts automatically -
+# no extra command needed to start it (equivalent to the brew services step above)
 
-# Download the model (one-time, ~4.7GB)
+# Linux
+curl -fsSL https://ollama.com/install.sh | sh
+```
+
+**Download the model (one-time, ~4.7GB, same command on every OS):**
+```bash
 ollama pull llama3.1:8b
 ```
 
@@ -173,7 +201,7 @@ Once that's done, you can switch to offline mode two ways:
 - **In the UI**: click the "Offline Mode" toggle in the app header - takes effect immediately
 - **In `.env`**: set `LLM_PROVIDER=ollama` and restart the backend
 
-Requires roughly 16GB of RAM for comfortable performance on Apple Silicon.
+Requires roughly 16GB of RAM for comfortable performance, regardless of OS. If Ollama isn't detected as running when you toggle offline mode in the UI, check that the Ollama app/service is actually started.
 
 
 ## Usage
